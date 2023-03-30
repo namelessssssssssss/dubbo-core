@@ -22,6 +22,7 @@ import net.bytebuddy.description.ByteCodeElement;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
+import org.apache.dubbo.common.constants.CommonConstants;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
@@ -52,7 +53,7 @@ public class ByteBuddyProxy {
     }
 
     private static ByteBuddyProxy getProxy(ClassLoader cl, Class<?>[] interfaces, InvocationHandler handler) {
-        if (interfaces.length > MAX_PROXY_COUNT) {
+        if (interfaces.length > CommonConstants.MAX_PROXY_COUNT) {
             throw new IllegalArgumentException("interface limit exceeded");
         }
         interfaces = interfaces.clone();

@@ -18,7 +18,7 @@ package org.apache.dubbo.registry.client.support;
 
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.registry.client.AbstractServiceDiscoveryFactory;
-import org.apache.dubbo.registry.client.ServiceDiscovery;
+import org.apache.dubbo.registry.ServiceDiscovery;
 
 public class MockServiceDiscoveryFactory extends AbstractServiceDiscoveryFactory {
     @Override

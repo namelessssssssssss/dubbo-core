@@ -21,6 +21,7 @@ import org.apache.dubbo.common.URL;
 import org.apache.dubbo.metadata.AbstractServiceNameMapping;
 import org.apache.dubbo.metadata.ServiceNameMapping;
 import org.apache.dubbo.registry.NotifyListener;
+import org.apache.dubbo.registry.ServiceDiscovery;
 import org.apache.dubbo.registry.client.event.listener.MockServiceInstancesChangedListener;
 import org.apache.dubbo.registry.client.event.listener.ServiceInstancesChangedListener;
 import org.apache.dubbo.rpc.model.ApplicationModel;

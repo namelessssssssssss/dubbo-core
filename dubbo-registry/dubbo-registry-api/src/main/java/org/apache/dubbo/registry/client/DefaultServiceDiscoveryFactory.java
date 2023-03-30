@@ -17,6 +17,7 @@
 package org.apache.dubbo.registry.client;
 
 import org.apache.dubbo.common.URL;
+import org.apache.dubbo.registry.ServiceDiscovery;
 
 /**
  * This class is designed for compatibility purpose. When a specific registry type does not have counterpart service discovery provided,

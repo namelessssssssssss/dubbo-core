@@ -23,7 +23,7 @@
 //import org.apache.dubbo.registry.Registry;
 //import org.apache.dubbo.registry.client.DefaultServiceInstance;
 //import org.apache.dubbo.registry.client.InMemoryServiceDiscovery;
-//import org.apache.dubbo.registry.client.ServiceDiscovery;
+//import org.apache.dubbo.registry.ServiceDiscovery;
 //import org.apache.dubbo.registry.client.ServiceDiscoveryRegistry;
 //import org.apache.dubbo.registry.support.RegistryManager;
 //import org.apache.dubbo.rpc.model.ApplicationModel;
