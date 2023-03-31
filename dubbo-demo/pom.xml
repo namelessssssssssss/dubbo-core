@@ -39,6 +39,7 @@
         <module>dubbo-demo-triple</module>
         <module>dubbo-demo-native</module>
         <module>dubbo-demo-spring-boot</module>
+        <module>dubbo-demo-core</module>
     </modules>
 
     <dependencyManagement>

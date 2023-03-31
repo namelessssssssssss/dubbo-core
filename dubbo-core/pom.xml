@@ -42,7 +42,6 @@
             <version>${project.parent.version}</version>
         </dependency>
 
-
         <dependency>
             <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo-demo-api-consumer</artifactId>
@@ -58,5 +57,7 @@
         </dependency>
 
     </dependencies>
+
+    <packaging>pom</packaging>
 
 </project>
