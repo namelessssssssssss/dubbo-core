@@ -19,7 +19,7 @@ package org.apache.dubbo.config;
 import org.apache.dubbo.common.beans.factory.ScopeBeanFactory;
 import org.apache.dubbo.common.deploy.ApplicationDeployer;
 import org.apache.dubbo.common.deploy.ModuleDeployer;
-import org.apache.dubbo.config.deploy.DefaultApplicationDeployer;
+import org.apache.dubbo.common.deploy.DefaultApplicationDeployer;
 import org.apache.dubbo.config.deploy.DefaultModuleDeployer;
 import org.apache.dubbo.config.deploy.FrameworkModelCleaner;
 import org.apache.dubbo.config.utils.DefaultConfigValidator;

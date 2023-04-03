@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.dubbo.config.deploy;
+package org.apache.dubbo.common.deploy;
 
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.config.ConfigurationUtils;
@@ -24,12 +24,6 @@ import org.apache.dubbo.common.config.configcenter.DynamicConfiguration;
 import org.apache.dubbo.common.config.configcenter.DynamicConfigurationFactory;
 import org.apache.dubbo.common.config.configcenter.wrapper.CompositeDynamicConfiguration;
 import org.apache.dubbo.common.constants.LoggerCodeConstants;
-import org.apache.dubbo.common.deploy.AbstractDeployer;
-import org.apache.dubbo.common.deploy.ApplicationDeployListener;
-import org.apache.dubbo.common.deploy.ApplicationDeployer;
-import org.apache.dubbo.common.deploy.DeployListener;
-import org.apache.dubbo.common.deploy.DeployState;
-import org.apache.dubbo.common.deploy.ModuleDeployer;
 import org.apache.dubbo.common.extension.ExtensionLoader;
 import org.apache.dubbo.common.lang.ShutdownHookCallbacks;
 import org.apache.dubbo.common.logger.ErrorTypeAwareLogger;
@@ -121,6 +115,7 @@ public class DefaultApplicationDeployer extends AbstractDeployer<ApplicationMode
 
     private ScheduledFuture<?> asyncMetadataFuture;
     private volatile CompletableFuture<Boolean> startFuture;
+
     private final DubboShutdownHook dubboShutdownHook;
 
     private volatile MetricsServiceExporter metricsServiceExporter;
@@ -163,7 +158,7 @@ public class DefaultApplicationDeployer extends AbstractDeployer<ApplicationMode
         return applicationModel;
     }
 
-    private <T> ExtensionLoader<T> getExtensionLoader(Class<T> type) {
+    public  <T> ExtensionLoader<T> getExtensionLoader(Class<T> type) {
         return applicationModel.getExtensionLoader(type);
     }
 
@@ -201,19 +196,21 @@ public class DefaultApplicationDeployer extends AbstractDeployer<ApplicationMode
             if (initialized) {
                 return;
             }
-            // register shutdown hook
+
             registerShutdownHook();
 
-            startConfigCenter();
+// 已移至ApplicationPackageLifeManager
+//            startConfigCenter();
+//
+//            loadApplicationConfigs();
+//
+//            initModuleDeployers();
 
-            loadApplicationConfigs();
 
-            initModuleDeployers();
-
-
-            initMetricsReporter();
-
-            initMetricsService();
+//已移至MetricsPackageLifeManager
+//            initMetricsReporter();
+//
+//            initMetricsService();
 
             // @since 2.7.8
             startMetadataCenter();
@@ -355,28 +352,28 @@ public class DefaultApplicationDeployer extends AbstractDeployer<ApplicationMode
         }
     }
 
-    private void initMetricsService() {
-        this.metricsServiceExporter = getExtensionLoader(MetricsServiceExporter.class).getDefaultExtension();
-        metricsServiceExporter.init();
-    }
-
-    private void initMetricsReporter() {
-        DefaultMetricsCollector collector =
-            applicationModel.getBeanFactory().getBean(DefaultMetricsCollector.class);
-        MetricsConfig metricsConfig = configManager.getMetrics().orElse(null);
-        // TODO compatible with old usage of metrics, remove protocol check after new metrics is ready for use.
-        if (metricsConfig != null && PROTOCOL_PROMETHEUS.equals(metricsConfig.getProtocol())) {
-            collector.setCollectEnabled(true);
-            collector.collectApplication(applicationModel);
-            String protocol = metricsConfig.getProtocol();
-            if (StringUtils.isNotEmpty(protocol)) {
-                MetricsReporterFactory metricsReporterFactory = getExtensionLoader(MetricsReporterFactory.class).getAdaptiveExtension();
-                MetricsReporter metricsReporter = metricsReporterFactory.createMetricsReporter(metricsConfig.toUrl());
-                metricsReporter.init();
-                applicationModel.getBeanFactory().registerBean(metricsReporter);
-            }
-        }
-    }
+//    private void initMetricsService() {
+//        this.metricsServiceExporter = getExtensionLoader(MetricsServiceExporter.class).getDefaultExtension();
+//        metricsServiceExporter.init();
+//    }
+//
+//    private void initMetricsReporter() {
+//        DefaultMetricsCollector collector =
+//            applicationModel.getBeanFactory().getBean(DefaultMetricsCollector.class);
+//        MetricsConfig metricsConfig = configManager.getMetrics().orElse(null);
+//        // TODO compatible with old usage of metrics, remove protocol check after new metrics is ready for use.
+//        if (metricsConfig != null && PROTOCOL_PROMETHEUS.equals(metricsConfig.getProtocol())) {
+//            collector.setCollectEnabled(true);
+//            collector.collectApplication(applicationModel);
+//            String protocol = metricsConfig.getProtocol();
+//            if (StringUtils.isNotEmpty(protocol)) {
+//                MetricsReporterFactory metricsReporterFactory = getExtensionLoader(MetricsReporterFactory.class).getAdaptiveExtension();
+//                MetricsReporter metricsReporter = metricsReporterFactory.createMetricsReporter(metricsConfig.toUrl());
+//                metricsReporter.init();
+//                applicationModel.getBeanFactory().registerBean(metricsReporter);
+//            }
+//        }
+//    }
 
 
     private boolean isUsedRegistryAsConfigCenter(RegistryConfig registryConfig) {
@@ -398,7 +395,7 @@ public class DefaultApplicationDeployer extends AbstractDeployer<ApplicationMode
         if (CollectionUtils.isNotEmptyMap(registryConfig.getParameters())) {
             cc.getParameters().putAll(registryConfig.getParameters()); // copy the parameters
         }
-        cc.getParameters().put(CLIENT_KEY, registryConfig.getClient());
+        cc.getParameters().put(Constants.CLIENT_KEY, registryConfig.getClient());
         cc.setProtocol(protocol);
         cc.setPort(port);
         if (StringUtils.isNotEmpty(registryConfig.getGroup())) {
@@ -538,7 +535,7 @@ public class DefaultApplicationDeployer extends AbstractDeployer<ApplicationMode
                 metadataReportConfig.getParameters().putIfAbsent(entry.getKey(), entry.getValue()); // copy the parameters
             }
         }
-        metadataReportConfig.getParameters().put(CLIENT_KEY, registryConfig.getClient());
+        metadataReportConfig.getParameters().put(Constants.CLIENT_KEY, registryConfig.getClient());
         if (metadataReportConfig.getGroup() == null) {
             metadataReportConfig.setGroup(registryConfig.getGroup());
         }
@@ -869,7 +866,7 @@ public class DefaultApplicationDeployer extends AbstractDeployer<ApplicationMode
                         logger.error(CONFIG_REFRESH_INSTANCE_ERROR, "", "", "Refresh instance and metadata error.", e);
                     }
                 }
-            }, 0, ConfigurationUtils.get(applicationModel, METADATA_PUBLISH_DELAY_KEY, DEFAULT_METADATA_PUBLISH_DELAY), TimeUnit.MILLISECONDS);
+            }, 0, ConfigurationUtils.get(applicationModel, MetadataConstants.METADATA_PUBLISH_DELAY_KEY, MetadataConstants.DEFAULT_METADATA_PUBLISH_DELAY), TimeUnit.MILLISECONDS);
         }
     }
 
@@ -1187,34 +1184,15 @@ public class DefaultApplicationDeployer extends AbstractDeployer<ApplicationMode
         }
     }
 
-    private ApplicationConfig getApplication() {
+    public ApplicationConfig getApplication() {
         return configManager.getApplicationOrElseThrow();
     }
 
-    private class Accessor {
-
-        public ApplicationModel getApplicationModel(){
-            return DefaultApplicationDeployer.this.applicationModel;
-        }
-
-        public  ConfigManager getConfigManager(){
-            return  DefaultApplicationDeployer.this.configManager;
-        }
-        public Environment getEnvironment(){
-            return DefaultApplicationDeployer.this.environment;
-        }
-        public ReferenceCache getReferenceCache(){
-            return DefaultApplicationDeployer.this.referenceCache;
-        }
-
-        public FrameworkExecutorRepository frameworkExecutorRepository(){
-            return DefaultApplicationDeployer.this.frameworkExecutorRepository;
-        }
-
-        public ExecutorRepository executorRepository(){
-            return DefaultApplicationDeployer.this.executorRepository;
-        }
+    public ConfigManager getConfigManager() {
+        return configManager;
     }
 
-
+    public Environment getEnvironment() {
+        return environment;
+    }
 }

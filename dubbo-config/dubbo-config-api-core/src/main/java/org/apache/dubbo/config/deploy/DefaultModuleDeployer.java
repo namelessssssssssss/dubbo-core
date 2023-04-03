@@ -17,11 +17,7 @@
 package org.apache.dubbo.config.deploy;
 
 import org.apache.dubbo.common.config.ReferenceCache;
-import org.apache.dubbo.common.deploy.AbstractDeployer;
-import org.apache.dubbo.common.deploy.ApplicationDeployer;
-import org.apache.dubbo.common.deploy.DeployState;
-import org.apache.dubbo.common.deploy.ModuleDeployListener;
-import org.apache.dubbo.common.deploy.ModuleDeployer;
+import org.apache.dubbo.common.deploy.*;
 import org.apache.dubbo.common.logger.ErrorTypeAwareLogger;
 import org.apache.dubbo.common.logger.LoggerFactory;
 import org.apache.dubbo.common.threadpool.manager.ExecutorRepository;
