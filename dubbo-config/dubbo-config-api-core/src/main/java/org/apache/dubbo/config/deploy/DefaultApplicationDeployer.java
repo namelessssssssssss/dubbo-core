@@ -1191,5 +1191,30 @@ public class DefaultApplicationDeployer extends AbstractDeployer<ApplicationMode
         return configManager.getApplicationOrElseThrow();
     }
 
+    private class Accessor {
+
+        public ApplicationModel getApplicationModel(){
+            return DefaultApplicationDeployer.this.applicationModel;
+        }
+
+        public  ConfigManager getConfigManager(){
+            return  DefaultApplicationDeployer.this.configManager;
+        }
+        public Environment getEnvironment(){
+            return DefaultApplicationDeployer.this.environment;
+        }
+        public ReferenceCache getReferenceCache(){
+            return DefaultApplicationDeployer.this.referenceCache;
+        }
+
+        public FrameworkExecutorRepository frameworkExecutorRepository(){
+            return DefaultApplicationDeployer.this.frameworkExecutorRepository;
+        }
+
+        public ExecutorRepository executorRepository(){
+            return DefaultApplicationDeployer.this.executorRepository;
+        }
+    }
+
 
 }
