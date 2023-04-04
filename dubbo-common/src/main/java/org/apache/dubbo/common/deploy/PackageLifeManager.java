@@ -21,9 +21,9 @@ public interface PackageLifeManager {
     String name();
 
     /**
-     * Specifies which PackageLifeManager should be called before this one when {@link DefaultApplicationDeployer#initialize()}. They are guaranteed to be called before this one.
+     * Specifies which PackageLifeManager should be called before this one when {@link DefaultApplicationDeployer#initialize()} called. They are guaranteed to be called before this one.
      * <br>
-     * Note that if there are cyclic dependencies between initializers, an {@link IllegalStateException} will be thrown.
+     * Note that if there are cyclic dependencies between PackageLifeManagers, an {@link IllegalStateException} will be thrown.
      * @return PackageLifeManager names. Can be null or empty list.
      */
     default List<String> dependOnInit(){
@@ -31,14 +31,14 @@ public interface PackageLifeManager {
     }
 
     /**
-     * Initialize.
+     * Initialize. This method will be called when {@link DefaultApplicationDeployer#initialize()} called.
      * @param  applicationDeployer The ApplicationDeployer that called this PackageLifeManager.
      */
     default void initialize(DefaultApplicationDeployer applicationDeployer){};
 
 
     /**
-     * Specifies which PackageLifeManager should be called before this one when {@link DefaultApplicationDeployer#preDestroy()}.
+     * Specifies which PackageLifeManager should be called before this one when {@link DefaultApplicationDeployer#preDestroy()} called.
      * <br>
      * Works just like {@link PackageLifeManager#dependOnInit()}.
      * @return PackageLifeManager names. Can be null or empty list.
@@ -48,13 +48,13 @@ public interface PackageLifeManager {
     };
 
     /**
-     * preDestroy.
+     * preDestroy. This method will be called when {@link DefaultApplicationDeployer#preDestroy()} called.
      * @param  applicationDeployer The ApplicationDeployer that called this PackageLifeManager.
      */
     default void preDestroy(DefaultApplicationDeployer applicationDeployer){};
 
     /**
-     * Specifies which PackageLifeManager should be called before this one when {@link DefaultApplicationDeployer#postDestroy()}}.
+     * Specifies which PackageLifeManager should be called before this one when {@link DefaultApplicationDeployer#postDestroy()} called.
      * <br>
      * Works just like {@link PackageLifeManager#dependOnInit()}.
      * @return PackageLifeManager names. Can be null or empty list.
@@ -64,7 +64,7 @@ public interface PackageLifeManager {
     };
 
     /**
-     * postDestroy.
+     * postDestroy. This method will be called when {@link DefaultApplicationDeployer#postDestroy()} called.
      * @param  applicationDeployer The ApplicationDeployer that called this PackageLifeManager.
      */
     default void postDestroy(DefaultApplicationDeployer applicationDeployer){
