@@ -212,8 +212,9 @@ public class DefaultApplicationDeployer extends AbstractDeployer<ApplicationMode
 //
 //            initMetricsService();
 
-            // @since 2.7.8
-            startMetadataCenter();
+//已移至MetadataPackageLifeManager
+//            // @since 2.7.8
+//            startMetadataCenter();
 
             initialized = true;
 

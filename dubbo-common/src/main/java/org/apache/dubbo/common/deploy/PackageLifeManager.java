@@ -9,7 +9,10 @@ import java.util.List;
  * <br>
  * Used in an application Lifecycle managing procedure, and dubbo packages can implement this interface to define what to do when Application start or destroy.
  * <br>
- * On the other word , when {@link DefaultApplicationDeployer#initialize()} , {@link DefaultApplicationDeployer#preDestroy()} or {@link DefaultApplicationDeployer#postDestroy()} called, all implementations of this interface will also be called.
+ * On the other word , when
+ * {@link DefaultApplicationDeployer#initialize()} ,
+ * {@link DefaultApplicationDeployer#preDestroy()} or
+ * {@link DefaultApplicationDeployer#postDestroy()} called, all implementations of this interface will also be called.
  */
 @SPI
 public interface PackageLifeManager {
