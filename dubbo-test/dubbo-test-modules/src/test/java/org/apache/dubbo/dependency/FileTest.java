@@ -107,7 +107,7 @@ class FileTest {
         expectedArtifactIds.removeAll(artifactIdsInDubboBom);
         expectedArtifactIds.removeIf(artifactId -> ignoredModules.stream().anyMatch(pattern -> pattern.matcher(artifactId).matches()));
 
-        Assertions.assertTrue(expectedArtifactIds.isEmpty(), "Newly created modules must be added to dubbo-bom. Found modules: " + expectedArtifactIds);
+        Assertions.assertTrue(expectedArtifactIds.isEmpty(), "Newly created modules must be added to dubbo-distribution/dubbo-bom. Found modules: " + expectedArtifactIds);
     }
 
     @Test
@@ -180,7 +180,7 @@ class FileTest {
         expectedArtifactIds.removeAll(artifactIdsInDubboDependenciesAll);
         expectedArtifactIds.removeIf(artifactId -> ignoredModules.stream().anyMatch(pattern -> pattern.matcher(artifactId).matches()));
 
-        Assertions.assertTrue(expectedArtifactIds.isEmpty(), "Newly created modules must be added to dubbo-dependencies-all. Found modules: " + expectedArtifactIds);
+        Assertions.assertTrue(expectedArtifactIds.isEmpty(), "Newly created modules must be added to dubbo-test/dubbo-dependencies-all. Found modules: " + expectedArtifactIds);
     }
 
     @Test
