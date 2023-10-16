@@ -56,7 +56,7 @@ public class StubInvocationUtil {
 
     private static Object call(Invoker<?> invoker, MethodDescriptor methodDescriptor,
         Object[] arguments) {
-        //Due to the design of ServiceDescriptor, the MethodDescriptor with the same name will only have one in ServiceDescriptor.
+        //Due to the design of ServiceDescriptor, the MethodDescriptor with the same name will override each other in ServiceDescriptor.
         //The sync and async version of MethodDescriptor share the same method name, and usually the sync version will replace another one
         //(Because it's declared after the async version).
         //So this RpcInvocation always uses MethodDescriptor of sync version to initialize.
