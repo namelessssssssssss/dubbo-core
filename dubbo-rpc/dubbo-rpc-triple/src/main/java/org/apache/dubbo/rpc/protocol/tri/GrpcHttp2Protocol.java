@@ -16,7 +16,5 @@
  */
 package org.apache.dubbo.rpc.protocol.tri;
 
-import org.apache.dubbo.common.extension.Activate;
-
-@Activate
+@Deprecated
 public class GrpcHttp2Protocol extends TripleHttp2Protocol {}
