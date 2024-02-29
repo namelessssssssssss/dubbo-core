@@ -42,7 +42,9 @@ public interface {{interfaceClassName}} extends org.apache.dubbo.rpc.model.Dubbo
     {{/javaDoc}}
     {{outputType}} {{methodName}}({{inputType}} request);
 
-    CompletableFuture<{{outputType}}> {{methodName}}Async({{inputType}} request);
+    default CompletableFuture<{{outputType}}> {{methodName}}Async({{inputType}} request){
+           return CompletableFuture.completedFuture({{methodName}}(request));
+    }
 
 
 
