@@ -19,8 +19,6 @@ package org.apache.dubbo.config.metadata;
 import org.apache.dubbo.common.BaseServiceMetadata;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.utils.CollectionUtils;
-import org.apache.dubbo.config.MetadataReportConfig;
-import org.apache.dubbo.config.context.ConfigManager;
 import org.apache.dubbo.metadata.MetadataService;
 import org.apache.dubbo.metadata.MetadataServiceV2;
 import org.apache.dubbo.metadata.util.MetadataReportVersionUtils;
@@ -34,9 +32,7 @@ import org.apache.dubbo.rpc.model.ProviderModel;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-import static org.apache.dubbo.common.constants.CommonConstants.TRIPLE;
 import static org.apache.dubbo.common.utils.StringUtils.isBlank;
 import static org.apache.dubbo.registry.client.metadata.ServiceInstanceMetadataUtils.METADATA_SERVICE_URL_PARAMS_PROPERTY_NAME;
 import static org.apache.dubbo.registry.client.metadata.ServiceInstanceMetadataUtils.getMetadataServiceParameter;
@@ -68,11 +64,13 @@ public class MetadataServiceURLParamsMetadataCustomizer implements ServiceInstan
 
         String key;
 
-        if(MetadataReportVersionUtils.onlyUseV2(applicationModel)){
+        if (MetadataReportVersionUtils.onlyExportV2(applicationModel)) {
             key = BaseServiceMetadata.buildServiceKey(
-                    MetadataServiceV2.class.getName(), applicationModel.getApplicationName(), MetadataServiceDelegationV2.VERSION);
-        }else {
-            //If MetadataService and MetadataServiceV2 are both exported, use v1 path for capacity
+                    MetadataServiceV2.class.getName(),
+                    applicationModel.getApplicationName(),
+                    MetadataServiceDelegationV2.VERSION);
+        } else {
+            // If MetadataService and MetadataServiceV2 are both exported, use v1 path for capacity
             key = BaseServiceMetadata.buildServiceKey(
                     MetadataService.class.getName(), applicationModel.getApplicationName(), MetadataService.VERSION);
         }

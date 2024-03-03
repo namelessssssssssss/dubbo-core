@@ -33,8 +33,6 @@ import static org.apache.dubbo.common.constants.CommonConstants.TRIPLE;
 
 public class MetadataReportVersionUtils {
 
-    public static final String V2 = "2.0.0";
-
     public static MetadataInfoV2 toV2(MetadataInfo metadataInfo) {
         if (metadataInfo == null) {
             return MetadataInfoV2.newBuilder().build();
@@ -64,29 +62,33 @@ public class MetadataReportVersionUtils {
                 .build();
     }
 
-    public static boolean enableV1(ApplicationModel applicationModel){
-        return !onlyUseV2(applicationModel);
+    public static boolean needExportV1(ApplicationModel applicationModel) {
+        return !onlyExportV2(applicationModel);
     }
 
-    public static boolean enableV2(ApplicationModel applicationModel){
+    public static boolean needExportV2(ApplicationModel applicationModel) {
         Optional<MetadataReportConfig> metadataConfigManager = getMetadataReportConfig(applicationModel);
 
-        return onlyUseV2(applicationModel) ||
-                metadataConfigManager.isPresent() && TRIPLE.equals(metadataConfigManager.get().getProtocol());
+        return onlyExportV2(applicationModel)
+                || metadataConfigManager.isPresent()
+                        && TRIPLE.equals(metadataConfigManager.get().getProtocol());
     }
 
-    public static boolean onlyUseV2(ApplicationModel applicationModel){
+    public static boolean onlyExportV2(ApplicationModel applicationModel) {
         Optional<MetadataReportConfig> metadataReportConfig = getMetadataReportConfig(applicationModel);
 
-        return metadataReportConfig.filter(config -> config.getOnlyUseMetadataV2() &&
-                TRIPLE.equals(config.getProtocol())).isPresent();
+        return metadataReportConfig
+                .filter(config -> config.getOnlyUseMetadataV2() && TRIPLE.equals(config.getProtocol()))
+                .isPresent();
     }
 
-    public static Optional<MetadataReportConfig> getMetadataReportConfig(ApplicationModel applicationModel){
+    public static Optional<MetadataReportConfig> getMetadataReportConfig(ApplicationModel applicationModel) {
         Optional<ConfigManager> configManager = Optional.ofNullable(applicationModel.getApplicationConfigManager());
 
-        if(configManager.isPresent() &&  CollectionUtils.isNotEmpty(configManager.get().getMetadataConfigs())) {
-            return Optional.of(configManager.get().getMetadataConfigs().iterator().next());
+        if (configManager.isPresent()
+                && CollectionUtils.isNotEmpty(configManager.get().getMetadataConfigs())) {
+            return Optional.of(
+                    configManager.get().getMetadataConfigs().iterator().next());
         }
         return Optional.empty();
     }
