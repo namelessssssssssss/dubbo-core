@@ -18,7 +18,7 @@ package org.apache.dubbo.rpc.cluster.xds.protocol.impl;
 
 import org.apache.dubbo.common.logger.ErrorTypeAwareLogger;
 import org.apache.dubbo.common.logger.LoggerFactory;
-import org.apache.dubbo.rpc.cluster.xds.AdsObserver;
+import org.apache.dubbo.rpc.cluster.xds.AdsClient;
 import org.apache.dubbo.rpc.cluster.xds.protocol.AbstractProtocol;
 import org.apache.dubbo.rpc.cluster.xds.resource.XdsVirtualHost;
 
@@ -49,8 +49,8 @@ public class LdsProtocol extends AbstractProtocol<XdsVirtualHost> {
 
     private Consumer<Set<String>> updateCallback;
 
-    public LdsProtocol(AdsObserver adsObserver, Node node, int checkInterval) {
-        super(adsObserver, node, checkInterval);
+    public LdsProtocol(AdsClient adsClient, Node node, int checkInterval) {
+        super(adsClient, node, checkInterval);
     }
 
     @Override

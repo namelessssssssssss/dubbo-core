@@ -16,7 +16,7 @@
  */
 package org.apache.dubbo.rpc.cluster.xds.bootstrap;
 
-import org.apache.dubbo.rpc.cluster.xds.XdsInitializationException;
+import org.apache.dubbo.rpc.cluster.xds.exception.XdsInitializationException;
 
 import javax.annotation.Nullable;
 

@@ -14,15 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.dubbo.rpc.cluster.xds;
+package org.apache.dubbo.rpc.cluster.xds.security;
 
-public final class XdsInitializationException extends Exception {
+public class ServiceAccountJwt {
 
-    public XdsInitializationException(String message) {
-        super(message);
+    private final String jwt;
+    private final long createAt;
+    private final long expireAt;
+
+    public ServiceAccountJwt(String jwt, long createAt, long expireAt) {
+        this.jwt = jwt;
+        this.createAt = createAt;
+        this.expireAt = expireAt;
     }
 
-    public XdsInitializationException(String message, Throwable cause) {
-        super(message, cause);
+    public String getJwt() {
+        return jwt;
+    }
+
+    public long getCreateAt() {
+        return createAt;
+    }
+
+    public long getExpireAt() {
+        return expireAt;
     }
 }

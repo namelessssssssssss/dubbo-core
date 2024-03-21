@@ -20,7 +20,7 @@ import org.apache.dubbo.common.logger.ErrorTypeAwareLogger;
 import org.apache.dubbo.common.logger.LoggerFactory;
 import org.apache.dubbo.common.utils.ConcurrentHashMapUtils;
 import org.apache.dubbo.common.utils.StringUtils;
-import org.apache.dubbo.rpc.cluster.xds.AdsObserver;
+import org.apache.dubbo.rpc.cluster.xds.AdsClient;
 import org.apache.dubbo.rpc.cluster.xds.XdsListener;
 
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ public abstract class AbstractProtocol<T> implements XdsProtocol, XdsListener {
 
     private static final ErrorTypeAwareLogger logger = LoggerFactory.getErrorTypeAwareLogger(AbstractProtocol.class);
 
-    protected AdsObserver adsObserver;
+    protected AdsClient adsClient;
 
     protected final Node node;
 
@@ -70,11 +70,11 @@ public abstract class AbstractProtocol<T> implements XdsProtocol, XdsListener {
 
     protected Map<String, T> resourcesMap = new ConcurrentHashMap<>();
 
-    public AbstractProtocol(AdsObserver adsObserver, Node node, int checkInterval) {
-        this.adsObserver = adsObserver;
+    public AbstractProtocol(AdsClient adsClient, Node node, int checkInterval) {
+        this.adsClient = adsClient;
         this.node = node;
         this.checkInterval = checkInterval;
-        adsObserver.addListener(this);
+        adsClient.addListener(this);
     }
 
     /**
@@ -146,7 +146,7 @@ public abstract class AbstractProtocol<T> implements XdsProtocol, XdsListener {
 
             Set<String> resourceNamesToObserve = new HashSet<>(resourceNames);
             resourceNamesToObserve.addAll(resourcesMap.keySet());
-            adsObserver.request(buildDiscoveryRequest(resourceNamesToObserve));
+            adsClient.request(buildDiscoveryRequest(resourceNamesToObserve));
             logger.info("Send xDS Observe request to remote. Resource count: " + resourceNamesToObserve.size()
                     + ". Resource Type: " + getTypeUrl());
         } finally {

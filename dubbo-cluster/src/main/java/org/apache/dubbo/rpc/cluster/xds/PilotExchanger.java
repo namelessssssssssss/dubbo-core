@@ -26,6 +26,7 @@ import org.apache.dubbo.rpc.cluster.xds.protocol.impl.RdsProtocol;
 import org.apache.dubbo.rpc.cluster.xds.resource.XdsCluster;
 import org.apache.dubbo.rpc.cluster.xds.resource.XdsRouteConfiguration;
 import org.apache.dubbo.rpc.cluster.xds.resource.XdsVirtualHost;
+import org.apache.dubbo.rpc.cluster.xds.security.api.MeshCredentialProvider;
 import org.apache.dubbo.rpc.model.ApplicationModel;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public class PilotExchanger {
 
     // protected final XdsChannel xdsChannel;
 
-    protected final AdsObserver adsObserver;
+    protected final AdsClient adsClient;
 
     protected final LdsProtocol ldsProtocol;
 
@@ -66,7 +67,12 @@ public class PilotExchanger {
         // xdsChannel = new XdsChannel(url);
         int pollingTimeout = url.getParameter("pollingTimeout", 10);
         this.applicationModel = url.getOrDefaultApplicationModel();
-        adsObserver = new AdsObserver(url, NodeBuilder.build());
+
+        MeshCredentialProvider credentialProvider =
+                applicationModel.getBeanFactory().getOrRegisterBean(MeshCredentialProvider.class);
+        credentialProvider.setUrl(url);
+
+        adsClient = new AdsClient(url, NodeBuilder.build());
 
         // rds 资源回调函数，将 RdsProtocol 的资源存放起来
         Consumer<List<XdsRouteConfiguration>> rdsCallback = (xdsRouteConfigurations) -> {
@@ -94,12 +100,11 @@ public class PilotExchanger {
                 }
             });
         };
-        this.rdsProtocol = new RdsProtocol(adsObserver, NodeBuilder.build(), pollingTimeout, rdsCallback);
-        this.edsProtocol = new EdsProtocol(adsObserver, NodeBuilder.build(), pollingTimeout, edsCallback);
+        this.rdsProtocol = new RdsProtocol(adsClient, NodeBuilder.build(), pollingTimeout, rdsCallback);
+        this.edsProtocol = new EdsProtocol(adsClient, NodeBuilder.build(), pollingTimeout, edsCallback);
 
-        this.ldsProtocol = new LdsProtocol(adsObserver, NodeBuilder.build(), pollingTimeout);
-        this.cdsProtocol = new CdsProtocol(adsObserver, NodeBuilder.build(), pollingTimeout);
-
+        this.ldsProtocol = new LdsProtocol(adsClient, NodeBuilder.build(), pollingTimeout);
+        this.cdsProtocol = new CdsProtocol(adsClient, NodeBuilder.build(), pollingTimeout);
         // lds 回调函数，在回调函数中监听所有的 rds 资源
         Consumer<Set<String>> ldsCallback = rdsProtocol::subscribeResource;
         ldsProtocol.setUpdateCallback(ldsCallback);
@@ -164,6 +169,6 @@ public class PilotExchanger {
 
     public void destroy() {
         // xdsChannel.destroy();
-        this.adsObserver.destroy();
+        this.adsClient.destroy();
     }
 }

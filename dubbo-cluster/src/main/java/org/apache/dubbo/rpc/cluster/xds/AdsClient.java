@@ -35,8 +35,8 @@ import io.grpc.stub.StreamObserver;
 
 import static org.apache.dubbo.common.constants.LoggerCodeConstants.REGISTRY_ERROR_REQUEST_XDS;
 
-public class AdsObserver {
-    private static final ErrorTypeAwareLogger logger = LoggerFactory.getErrorTypeAwareLogger(AdsObserver.class);
+public class AdsClient {
+    private static final ErrorTypeAwareLogger logger = LoggerFactory.getErrorTypeAwareLogger(AdsClient.class);
     private final ApplicationModel applicationModel;
     private final URL url;
     private final Node node;
@@ -48,7 +48,7 @@ public class AdsObserver {
 
     private final Map<String, DiscoveryRequest> observedResources = new ConcurrentHashMap<>();
 
-    public AdsObserver(URL url, Node node) {
+    public AdsClient(URL url, Node node) {
         this.url = url;
         this.node = node;
         this.xdsChannel = new XdsChannel(url);
@@ -61,52 +61,48 @@ public class AdsObserver {
 
     public void request(DiscoveryRequest discoveryRequest) {
         if (requestObserver == null) {
-            requestObserver = xdsChannel.createDeltaDiscoveryRequest(new ResponseObserver(this));
+            requestObserver = xdsChannel.createDeltaDiscoveryRequest(new ResponseObserver());
         }
         requestObserver.onNext(discoveryRequest);
         observedResources.put(discoveryRequest.getTypeUrl(), discoveryRequest);
     }
 
-    private static class ResponseObserver implements StreamObserver<DiscoveryResponse> {
-        private AdsObserver adsObserver;
+    private class ResponseObserver implements StreamObserver<DiscoveryResponse> {
 
-        public ResponseObserver(AdsObserver adsObserver) {
-            this.adsObserver = adsObserver;
-        }
+        private String lastError;
+        private int lastErrorCode;
 
         @Override
         public void onNext(DiscoveryResponse discoveryResponse) {
             // 当 server 回复时，调用不同类型的协议监听器进行解析
             System.out.println("Receive message from server");
-            XdsListener xdsListener = adsObserver.listeners.get(discoveryResponse.getTypeUrl());
+            XdsListener xdsListener = listeners.get(discoveryResponse.getTypeUrl());
             xdsListener.process(discoveryResponse);
-            adsObserver.requestObserver.onNext(buildAck(discoveryResponse));
+            requestObserver.onNext(buildAck(discoveryResponse));
         }
 
         protected DiscoveryRequest buildAck(DiscoveryResponse response) {
             // for ACK
             return DiscoveryRequest.newBuilder()
-                    .setNode(adsObserver.node)
+                    .setNode(node)
                     .setTypeUrl(response.getTypeUrl())
                     .setVersionInfo(response.getVersionInfo())
                     .setResponseNonce(response.getNonce())
-                    .addAllResourceNames(adsObserver
-                            .observedResources
-                            .get(response.getTypeUrl())
-                            .getResourceNamesList())
+                    .addAllResourceNames(
+                            observedResources.get(response.getTypeUrl()).getResourceNamesList())
                     .build();
         }
 
         @Override
         public void onError(Throwable throwable) {
             logger.error(REGISTRY_ERROR_REQUEST_XDS, "", "", "xDS Client received error message! detail:", throwable);
-            adsObserver.triggerReConnectTask();
+            triggerReConnectTask();
         }
 
         @Override
         public void onCompleted() {
             logger.info("xDS Client completed");
-            adsObserver.triggerReConnectTask();
+            triggerReConnectTask();
         }
     }
 
@@ -123,7 +119,7 @@ public class AdsObserver {
         try {
             xdsChannel = new XdsChannel(url);
             if (xdsChannel.getChannel() != null) {
-                requestObserver = xdsChannel.createDeltaDiscoveryRequest(new ResponseObserver(this));
+                requestObserver = xdsChannel.createDeltaDiscoveryRequest(new ResponseObserver());
                 observedResources.values().forEach(requestObserver::onNext);
                 return;
             } else {
@@ -141,5 +137,10 @@ public class AdsObserver {
 
     public void destroy() {
         this.xdsChannel.destroy();
+    }
+
+    @Deprecated
+    public XdsChannel getXdsChannel() {
+        return xdsChannel;
     }
 }

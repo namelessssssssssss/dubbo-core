@@ -18,7 +18,7 @@ package org.apache.dubbo.rpc.cluster.xds.protocol.impl;
 
 import org.apache.dubbo.common.logger.ErrorTypeAwareLogger;
 import org.apache.dubbo.common.logger.LoggerFactory;
-import org.apache.dubbo.rpc.cluster.xds.AdsObserver;
+import org.apache.dubbo.rpc.cluster.xds.AdsClient;
 import org.apache.dubbo.rpc.cluster.xds.protocol.AbstractProtocol;
 
 import java.util.HashMap;
@@ -36,6 +36,7 @@ import io.envoyproxy.envoy.extensions.filters.network.http_connection_manager.v3
 import io.envoyproxy.envoy.service.discovery.v3.DiscoveryResponse;
 
 import static org.apache.dubbo.common.constants.LoggerCodeConstants.REGISTRY_ERROR_RESPONSE_XDS;
+import static org.apache.dubbo.rpc.cluster.xds.utils.XdsIoUtils.unpack;
 
 public class CdsProtocol extends AbstractProtocol<String> {
     private static final ErrorTypeAwareLogger logger = LoggerFactory.getErrorTypeAwareLogger(CdsProtocol.class);
@@ -46,8 +47,8 @@ public class CdsProtocol extends AbstractProtocol<String> {
 
     private Consumer<Set<String>> updateCallback;
 
-    public CdsProtocol(AdsObserver adsObserver, Node node, int checkInterval) {
-        super(adsObserver, node, checkInterval);
+    public CdsProtocol(AdsClient adsClient, Node node, int checkInterval) {
+        super(adsClient, node, checkInterval);
     }
 
     @Override
@@ -76,12 +77,7 @@ public class CdsProtocol extends AbstractProtocol<String> {
     }
 
     private static Cluster unpackCluster(Any any) {
-        try {
-            return any.unpack(Cluster.class);
-        } catch (InvalidProtocolBufferException e) {
-            logger.error(REGISTRY_ERROR_RESPONSE_XDS, "", "", "Error occur when decode xDS response.", e);
-            return null;
-        }
+        return unpack(any, Cluster.class);
     }
 
     private static HttpConnectionManager unpackHttpConnectionManager(Any any) {

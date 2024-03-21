@@ -14,45 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.dubbo.rpc.cluster.xds.bootstrap;
+package org.apache.dubbo.rpc.cluster.xds.security.api;
 
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.extension.Adaptive;
 import org.apache.dubbo.common.extension.SPI;
+import org.apache.dubbo.rpc.cluster.xds.security.CertPair;
 
 @SPI
 public interface XdsCertificateSigner {
 
     @Adaptive(value = "signer")
-    CertPair GenerateCert(URL url);
-
-    class CertPair {
-        private final String privateKey;
-        private final String publicKey;
-        private final long createTime;
-        private final long expireTime;
-
-        public CertPair(String privateKey, String publicKey, long createTime, long expireTime) {
-            this.privateKey = privateKey;
-            this.publicKey = publicKey;
-            this.createTime = createTime;
-            this.expireTime = expireTime;
-        }
-
-        public String getPrivateKey() {
-            return privateKey;
-        }
-
-        public String getPublicKey() {
-            return publicKey;
-        }
-
-        public long getCreateTime() {
-            return createTime;
-        }
-
-        public boolean isExpire() {
-            return System.currentTimeMillis() < expireTime;
-        }
-    }
+    CertPair generateCert(URL url);
 }

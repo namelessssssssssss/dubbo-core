@@ -18,7 +18,7 @@ package org.apache.dubbo.rpc.cluster.xds.protocol.impl;
 
 import org.apache.dubbo.common.logger.ErrorTypeAwareLogger;
 import org.apache.dubbo.common.logger.LoggerFactory;
-import org.apache.dubbo.rpc.cluster.xds.AdsObserver;
+import org.apache.dubbo.rpc.cluster.xds.AdsClient;
 import org.apache.dubbo.rpc.cluster.xds.protocol.AbstractProtocol;
 import org.apache.dubbo.rpc.cluster.xds.resource.XdsRoute;
 import org.apache.dubbo.rpc.cluster.xds.resource.XdsRouteAction;
@@ -52,11 +52,8 @@ public class RdsProtocol extends AbstractProtocol<String> {
     protected Consumer<List<XdsRouteConfiguration>> updateCallback;
 
     public RdsProtocol(
-            AdsObserver adsObserver,
-            Node node,
-            int checkInterval,
-            Consumer<List<XdsRouteConfiguration>> updateCallback) {
-        super(adsObserver, node, checkInterval);
+            AdsClient adsClient, Node node, int checkInterval, Consumer<List<XdsRouteConfiguration>> updateCallback) {
+        super(adsClient, node, checkInterval);
         this.updateCallback = updateCallback;
     }
 
